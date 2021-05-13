@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: upload-task
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+spec:
+  description: This task uploads a Junit report to S3
+  resources:
+    outputs:
+      - name: reports
+        type: storage
+  steps:
+  - name: create-zip
+    image: kramos/alpine-zip:latest
+    script: |
+      #!/bin/sh
+
+      mkdir -p $(outputs.resources.reports.path)
+
+      cat > /workspace/junit.xml <<-EOF
+        ... some junit.xml report file containing test output.
+        This is just a sample to show how the file can be uploaded to S3 when you already have it.
+      EOF
+
+      zip $(outputs.resources.reports.path)/junit-$(date -I).zip /workspace/junit.xml
+      ls -al $(outputs.resources.reports.path)/

@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: tkn-storage
+spec:
+  type: storage
+  params:
+    - name: type
+      value: gcs
+    - name: location
+      value: s3://some-bucket-name-for-tekton-storage
+    - name: dir
+      value: "y" # This can have any value to be considered "true"
+  secrets:
+    - fieldName: BOTO_CONFIG
+      secretName: tekton-storage-bucket
+      secretKey: boto_config
